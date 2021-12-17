@@ -1,13 +1,8 @@
 import operator as op
 from functools import reduce
 
-filename = 'input/day16.txt'
-
-
-def getInput(filename):
-    with open(filename) as i:
-        ret = i.read()
-    return ret.strip().split('\n')
+_filename = 'input/day16.txt'
+OPERS = {0: op.add, 1: op.mul, 5: op.gt, 6: op.lt, 7: op.eq}
 
 
 def peek(data, n, bits=False):
@@ -18,57 +13,48 @@ def peek(data, n, bits=False):
     return ret
 
 
-def processVal(vals, typeID):
-    opers = {0: op.add, 1: op.mul, 5: op.gt, 6: op.lt, 7: op.eq}
-    if typeID == 2:
-        return min(vals)
-    elif typeID == 3:
-        return max(vals)
-    else:
-        return reduce(opers[typeID], vals)
-
-
-def parse(data, sumVer=[0]):
+def parse(data, sum_ver=[0]):
     ver = peek(data, 3)
-    sumVer[0] += ver
+    sum_ver[0] += ver
 
-    typeID = peek(data, 3)
-    if typeID == 4:
-        binNum = ''
+    type_id = peek(data, 3)
+    if type_id == 4:
+        ret_val = 0
         while True:
             flag = peek(data, 1)
-            binNum += peek(data, 4, bits=True)
+            ret_val = (ret_val << 4) + peek(data, 4)
             if not flag:
                 break
-        retVal = int(binNum, 2)
     else:
-        lenID = peek(data, 1)
-        subVals = []
-        if lenID:
-            numSubpackets = peek(data, 11)
-            for _ in range(numSubpackets):
-                data, _, subVal = parse(data, sumVer)
-                subVals.append(subVal)
+        len_id = peek(data, 1)
+        subvals = []
+        if len_id:
+            n_subpackets = peek(data, 11)
+            for _ in range(n_subpackets):
+                data, _, sub_val = parse(data, sum_ver)
+                subvals.append(sub_val)
         else:
             lenSubpackets = peek(data, 15)
             subpackets = [peek(data, lenSubpackets, bits=True)]
             while subpackets[0]:
-                subpackets, _, subVal = parse(subpackets, sumVer)
-                subVals.append(subVal)
-        retVal = processVal(subVals, typeID)
+                subpackets, _, sub_val = parse(subpackets, sum_ver)
+                subvals.append(sub_val)
+        if type_id == 2:
+            ret_val = min(subvals)
+        elif type_id == 3:
+            ret_val = max(subvals)
+        else:
+            ret_val = reduce(OPERS[type_id], subvals)
 
-    return data, sumVer[0], retVal
+    return data, sum_ver[0], ret_val
 
 
-def solve(data):
+if __name__ == '__main__':
+    with open(_filename) as i:
+        data = i.read().strip().split('\n')
     for line in data:
         l = 4*len(line)
         line = bin(int(line, 16))[2:].zfill(l)
         _, part1, part2 = parse([line])
         print(f'Part 1: {part1}')
         print(f'Part 2: {part2}')
-
-
-if __name__ == '__main__':
-    data = getInput(filename)
-    solve(data)
