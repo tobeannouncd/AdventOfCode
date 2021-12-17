@@ -51,6 +51,4 @@ if __name__ == '__main__':
     for line in data:
         l = 4*len(line)
         line = bin(int(line, 16))[2:].zfill(l)
-        _, part1, part2 = parse([line])
-        print(f'Part 1: {part1}')
-        print(f'Part 2: {part2}')
+        print('Part 1: {1}\nPart 2: {2}'.format(*parse([line])))
