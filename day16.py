@@ -2,7 +2,8 @@ import operator as op
 from functools import reduce
 
 _filename = 'input/day16.txt'
-OPERS = {0: op.add, 1: op.mul, 5: op.gt, 6: op.lt, 7: op.eq}
+OPERS = {0: op.add, 1: op.mul, 2: (lambda x, y: min(x, y)),
+         3: (lambda x, y: max(x, y)), 5: op.gt, 6: op.lt, 7: op.eq}
 
 
 def peek(data, n, bits=False):
@@ -39,12 +40,7 @@ def parse(data, sum_ver=[0]):
             while subpackets[0]:
                 subpackets, _, sub_val = parse(subpackets, sum_ver)
                 subvals.append(sub_val)
-        if type_id == 2:
-            ret_val = min(subvals)
-        elif type_id == 3:
-            ret_val = max(subvals)
-        else:
-            ret_val = reduce(OPERS[type_id], subvals)
+        ret_val = reduce(OPERS[type_id], subvals)
 
     return data, sum_ver[0], ret_val
 
