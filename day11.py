@@ -4,7 +4,7 @@ import numpy as np
 
 from advent import getData
 
-data = getData(day=11)
+data = getData(11)
 d_array = np.array([[int(a) for a in line.strip()] for line in data])
 
 

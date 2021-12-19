@@ -94,7 +94,7 @@ def explode(sn):
 
 
 if __name__ == '__main__':
-    d = list(map(loads, getData(day=18)))
+    d = list(map(loads, getData(18)))
     t0 = perf_counter()
     print(reduce(add, map(Snail, d)).mag())
     t1 = perf_counter()

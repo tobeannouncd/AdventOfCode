@@ -1,4 +1,4 @@
-from advent import *
+from advent import getData
 
 leftBrackets = '([{<'
 rightBrackets = ')]}>'
@@ -9,7 +9,7 @@ filename = './input/day10.txt'
 
 def part1():
     badChars = []
-    for line in getData(filename):
+    for line in getData(10):
         q = []
         for char in line.strip():
             if char in leftBrackets:
@@ -40,7 +40,7 @@ def score2(strList):
 
 def part2():
     compStrings = []
-    for line in getData(filename):
+    for line in getData(10):
         q = []
         isIncomplete = True
         for char in line.strip():

@@ -40,7 +40,7 @@ def getPaths(nodes, maxSmallVisits):
     pass
 
 
-data = getData(day=12)
+data = getData(12)
 
 nodes = makeNodes(data)  # TODO
 
