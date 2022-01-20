@@ -2,7 +2,7 @@ import pickle
 import requests
 from os.path import exists
 
-COOKIE_FILE = '../input/cookie.pickle'
+COOKIE_FILE = './input/cookie.pickle'
 BASE_URL = 'https://adventofcode.com/'
 
 
