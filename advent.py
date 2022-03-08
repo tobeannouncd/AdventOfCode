@@ -4,9 +4,9 @@ import pickle
 from collections.abc import Callable
 from os.path import exists
 from typing import Iterable
-from PIL import Image
 
 import requests
+from PIL import Image
 
 COOKIE_FILE = './input/cookie.pickle'
 BASE_URL = 'https://adventofcode.com/'
