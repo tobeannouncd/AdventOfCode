@@ -1,6 +1,6 @@
 from functools import reduce
 from itertools import product
-import re
+
 import advent
 
 CASES = {
@@ -8,19 +8,6 @@ CASES = {
     'or': 1,
     'and': 2
 }
-
-SAMPLE_DATA = '''0: 4 1 5
-1: 2 3 | 3 2
-2: 4 4 | 5 5
-3: 4 5 | 5 4
-4: "a"
-5: "b"
-
-ababbb
-bababa
-abbbab
-aaabbb
-aaaabbb'''
 
 
 def regex_and(pattern_a: str, pattern_b: str):
@@ -86,9 +73,8 @@ class Solution:
 
 def main():
     data = advent.get_input(2020, 19)
-    # data = SAMPLE_DATA
     s = Solution(data)
-    s.part_one(True)
+    s.part_one()
 
 
 if __name__ == '__main__':

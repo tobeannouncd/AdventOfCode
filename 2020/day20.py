@@ -1,4 +1,3 @@
-from typing_extensions import Self
 import numpy as np
 
 import advent
@@ -58,7 +57,7 @@ class Tile:
             out.add(''.join(np.rot90(flip, i)[0]))
         return out
 
-    def find_overlap(self, other: Self):
+    def find_overlap(self, other):
         if not self.edges & other.edges:
             return False
 

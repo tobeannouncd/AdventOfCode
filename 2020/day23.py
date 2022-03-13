@@ -1,17 +1,21 @@
 from dataclasses import dataclass
-from typing_extensions import Self
+
 import advent
 
 
 @dataclass
 class Cup:
     id: int
-    next: Self = None
+    next = None
 
 
 def main():
     data = tuple(map(int, advent.get_input(2020, 23).strip()))
-    part_two = True
+    solve(data)
+    solve(data, part_two=True)
+
+
+def solve(data, part_two=False):
     prev = None
     cups = {}
     for n in data:
@@ -53,7 +57,7 @@ def main():
         dest_cup.next, pick_up_end.next = pick_up, dest_cup.next
 
         current = current.next
-        
+
     if not part_two:
         ans = ''
         n = cups[1]
@@ -66,7 +70,6 @@ def main():
     else:
         ans = cups[1].next.id * cups[1].next.next.id
         print(ans)
-        
 
 
 if __name__ == '__main__':

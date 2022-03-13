@@ -1,6 +1,6 @@
 from collections import defaultdict
-import advent
 
+import advent
 
 DIRS = {
     'w': -2,
@@ -10,27 +10,6 @@ DIRS = {
     'ne': 1+1j,
     'se': 1-1j
 }
-
-SAMPLE = '''sesenwnenenewseeswwswswwnenewsewsw
-neeenesenwnwwswnenewnwwsewnenwseswesw
-seswneswswsenwwnwse
-nwnwneseeswswnenewneswwnewseswneseene
-swweswneswnenwsewnwneneseenw
-eesenwseswswnenwswnwnwsewwnwsene
-sewnenenenesenwsewnenwwwse
-wenwwweseeeweswwwnwwe
-wsweesenenewnwwnwsenewsenwwsesesenwne
-neeswseenwwswnwswswnw
-nenwswwsewswnenenewsenwsenwnesesenew
-enewnwewneswsewnwswenweswnenwsenwsw
-sweneswneswneneenwnewenewwneswswnese
-swwesenesewenwneswnwwneseswwne
-enesenwswwswneneswsenwnewswseenwsese
-wnwnesenesenenwwnenwsewesewsesesew
-nenewswnwewswnenesenwnesewesw
-eneswnwswnwsenenwnwnwwseeswneewsenese
-neswnwewnwnwseenwseesewsenwsweewe
-wseweeenwnesenwwwswnew'''.splitlines()
 
 
 def dest(line: str):
@@ -70,7 +49,6 @@ def evolve(black_points: set):
 
 def main():
     data = advent.get_input(2020, 24).strip().splitlines()
-    # data = SAMPLE
     black_tiles = part_one(data)
     print(sum(black_tiles.values()))
     black_points = set(p for p, v in black_tiles.items() if v)
