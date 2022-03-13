@@ -36,11 +36,11 @@ def get_input(year: int, day: int, fname_only: bool = False) -> str:
         with open(COOKIE_FILE, 'rb') as f:
             r = requests.get(url, cookies=pickle.load(f))
         with open(file_path, 'w') as f:
-            f.write(r.text.strip())
+            f.write(r.text)
     if fname_only:
         return file_path
     with open(file_path) as f:
-        data = f.read().strip()
+        data = f.read()
     return data
 
 

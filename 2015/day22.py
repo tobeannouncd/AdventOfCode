@@ -1,72 +1,117 @@
+import re
+from collections import defaultdict, namedtuple
+from copy import deepcopy
 from dataclasses import dataclass, field
+from sys import maxsize
+
 import advent
 
-SPELL_COSTS = {'Missile': 53, 'Drain': 73,
-               'Shield': 113, 'Poison': 173, 'Recharge': 229}
+Spell = namedtuple('Spell', ['cost', 'dmg', 'hp', 'turns', 'armor'])
 
-STARTING_HP = 50
-STARTING_MANA = 500
+SPELLS = {
+    'Magic Missile': Spell(53, 4, 0, 0, 0),
+    'Drain': Spell(73, 2, 2, 0, 0),
+    'Shield': Spell(113, 0, 0, 6, 7),
+    'Poison': Spell(173, 0, 0, 6, 0),
+    'Recharge': Spell(229, 0, 0, 5, 0)
+}
 
 
 @dataclass
-class Player:
-    boss_health: int
-    boss_damage: int
-    hp: int = STARTING_HP
-    mana: int = STARTING_MANA
-    manaspent: int = 0
-    effects: dict = field(default_factory=dict)
-
-    def cast(self, spell):
-        if spell == 'Missile':
-            self.boss_health -= 4
-        elif spell == 'Drain':
-            self.boss_health -= 2
-            self.hp += 2
-        elif spell == 'Shield':
-            self.effects['Shield'] = 6
-        elif spell == 'Poison':
-            self.effects['Poison'] = 6
-        elif spell == 'Recharge':
-            self.effects['Recharge'] = 5
-        self.mana -= SPELL_COSTS[spell]
-        self.manaspent += SPELL_COSTS[spell]
-
-    def upkeep(self):
-        for e, v in self.effects.items():
-            if e == 'Poison':
-                self.boss_health -= 3
-            elif e == 'Recharge':
-                self.mana += 101
-            v -= 1
-        for e, v in self.effects.copy().items():
-            if v == 0:
-                del self.effects[e]
-
-    def boss_attack(self):
-        dmg = max(self.boss_damage - (7 if 'Shield' in self.effects else 0), 1)
-        self.hp -= dmg
-
-    def who_is_dead(self):
-        if self.hp <= 0:
-            return 'Player has died'
-        elif self.boss_health <= 0:
-            return 'Boss has died'
-        return False
+class Game:
+    boss_hp: int
+    player_hp: int = 50
+    player_mana: int = 500
+    player_armor: int = 0
+    timers: defaultdict[str, int] = field(
+        default_factory=lambda: defaultdict(int))
+    player_turn: bool = True
+    mana_used: int = 0
+    history: list = field(default_factory=list)
 
 
-def game(boss_hp, boss_dmg):
+class Solution:
+    def __init__(self, data: str) -> None:
+        self.boss_hp, self.boss_dmg = map(int, re.findall(r'\d+', data))
+        self.best_mana = {1: maxsize, 2: maxsize}
+        self.best_path = {1: None, 2: None}
 
+    def simulate(self, game: Game, part: int):
+        if game.mana_used >= self.best_mana[part]:
+            return
 
+        if part == 2 and game.player_turn:
+            game.player_hp -= 1
+            if game.player_hp <= 0:
+                return
 
+        for spell_name, turns_left in game.timers.items():
+            if turns_left == 0:
+                continue
+            if spell_name == 'Poison':
+                game.boss_hp -= 3
+                if game.boss_hp <= 0:
+                    if game.mana_used < self.best_mana[part]:
+                        self.best_mana[part] = game.mana_used
+                        self.best_path[part] = game.history.copy()
+                    return
+            elif spell_name == 'Recharge':
+                game.player_mana += 101
+            elif spell_name == 'Shield' and turns_left == 1:
+                game.player_armor = 0
+            game.timers[spell_name] -= 1
+
+        if game.player_turn:
+            for spell_name, spell in SPELLS.items():
+                if spell.cost > game.player_mana:
+                    continue
+                if game.timers[spell_name] > 0:
+                    continue
+
+                new_game = deepcopy(game)
+                new_game.history.append(spell_name)
+
+                new_game.player_mana -= spell.cost
+                new_game.mana_used += spell.cost
+                if new_game.mana_used >= self.best_mana[part]:
+                    continue
+
+                new_game.boss_hp -= spell.dmg
+                if new_game.boss_hp <= 0:
+                    if new_game.mana_used < self.best_mana[part]:
+                        self.best_mana[part] = new_game.mana_used
+                    return
+
+                new_game.player_armor += spell.armor
+                new_game.player_hp += spell.hp
+                new_game.player_turn = False
+                new_game.timers[spell_name] = spell.turns
+                self.simulate(new_game, part)
+        else:
+            damage = max(0, self.boss_dmg - game.player_armor)
+            game.player_hp -= damage
+            if game.player_hp > 0:
+                game.player_turn = True
+                self.simulate(game, part)
+
+    def part_one(self, print_path=False):
+        self.simulate(Game(self.boss_hp), part=1)
+        print(self.best_mana[1])
+        if print_path:
+            print(f'Path: {self.best_path[1]}')
+
+    def part_two(self, print_path=False):
+        self.simulate(Game(self.boss_hp), part=2)
+        print(self.best_mana[2])
+        if print_path:
+            print(f'Path: {self.best_path[2]}')
 
 
 def main():
-    sInput = advent.get_input(2015, 22).splitlines()
-    boss_hp = int(sInput[0].split()[-1])
-    boss_dmg = int(sInput[1].split()[-1])
-    players = [Player(boss_hp, boss_dmg))]
-    
+    data = advent.get_input(2015, 22)
+    s = Solution(data)
+    s.part_one()
+    s.part_two()
 
 
 if __name__ == '__main__':
